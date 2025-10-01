@@ -15,3 +15,14 @@ stages:
     - src/data/data_preprocessing.py
     outs:
     - data/interim
+
+    feature_engineering:
+    cmd: python src/features/feature_engineering.py
+    deps:
+    - data/interim
+    - src/features/feature_engineering.py
+    params:
+    - feature_engineering.max_features
+    outs:
+    - data/processed
+    - models/vectorizer.pkl  
