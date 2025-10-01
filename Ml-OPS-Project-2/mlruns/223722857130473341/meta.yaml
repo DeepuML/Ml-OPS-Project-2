@@ -1,0 +1,6 @@
+artifact_location: file:///c:/Users/Deepu/OneDrive/Desktop/mlops_project/Ml-OPS-Project-2/mlruns/223722857130473341
+creation_time: 1759345034585
+experiment_id: '223722857130473341'
+last_update_time: 1759345034585
+lifecycle_stage: active
+name: dvc-pipeline

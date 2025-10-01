@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Deepu/OneDrive/Desktop/mlops_project/Ml-OPS-Project-2/mlruns/223722857130473341/7b60c971adc34088a486fbc86f1b1c97/artifacts
+end_time: 1759345453481
+entry_point_name: ''
+experiment_id: '223722857130473341'
+lifecycle_stage: active
+run_id: 7b60c971adc34088a486fbc86f1b1c97
+run_name: gregarious-lynx-298
+run_uuid: 7b60c971adc34088a486fbc86f1b1c97
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759345452919
+status: 3
+tags: []
+user_id: Deepu

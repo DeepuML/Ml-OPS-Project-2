@@ -117,9 +117,13 @@ def main():
     mlflow.set_experiment("dvc-pipeline")
     with mlflow.start_run() as run:  # Start an MLflow run
         try:
+            vectorizer = load_model('./models/vectorizer.pkl')
             clf = load_model('./models/model.pkl')
             test_data = load_data('./data/processed/test_bow.csv')
-            
+
+            # If test_bow.csv is already vectorized, skip this step
+            # Otherwise, transform text:
+            # X_test = vectorizer.transform(test_data['text'])
             X_test = test_data.iloc[:, :-1].values
             y_test = test_data.iloc[:, -1].values
 
