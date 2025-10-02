@@ -5,6 +5,9 @@ on: push
 jobs:
   project-testing:
     runs-on: ubuntu-latest
+    env:   # 👈 put here at the job level
+      DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,6 +23,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run DVC Pipeline
-        env:
-          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
         run: dvc repro
