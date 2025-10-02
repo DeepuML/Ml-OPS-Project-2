@@ -7,9 +7,7 @@ import os
 import dagshub
 
 
-dagshub_token = os.getenv("DAGSHUB_PAT")
-if not dagshub_token:
-    raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
+dagshub_token = "38482a552497f9dec23398027b8b85dd86d07772"
 
 dagshub_url = "https://dagshub.com"
 repo_owner = "DeepuML"
