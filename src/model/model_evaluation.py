@@ -25,6 +25,12 @@ import dagshub
 # Set up MLflow tracking URI
 # mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 
+import dagshub
+dagshub.init(repo_owner='DeepuML', repo_name='Ml-OPS-Project-2', mlflow=True)
+mlflow.set_tracking_uri("https://dagshub.com/DeepuML/Ml-OPS-Project-2.mlflow")
+
+
+
 # logging configuration
 logger = logging.getLogger('model_evaluation')
 logger.setLevel('DEBUG')
