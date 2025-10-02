@@ -10,7 +10,11 @@ import mlflow
 import mlflow.sklearn
 import dagshub
 
-# Set up DagsHub credentials for MLflow tracking
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 dagshub_token = os.getenv("DAGSHUB_PAT")
 if not dagshub_token:
     raise EnvironmentError("DAGSHUB_PAT environment variable is not set")
@@ -18,15 +22,12 @@ if not dagshub_token:
 os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
 os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
+
 dagshub_url = "https://dagshub.com"
-repo_owner = "DeeepuML"
+repo_owner = "DeepuML"
 repo_name = "Ml-OPS-Project-2"
 
-# Set up MLflow tracking URI
-mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
-
-
-
+mlflow.set_tracking_uri(f"{dagshub_url}/{repo_owner}/{repo_name}.mlflow")
 
 # logging configuration
 logger = logging.getLogger('model_evaluation')
@@ -127,8 +128,8 @@ def main():
             # If test_bow.csv is already vectorized, skip this step
             # Otherwise, transform text:
             # X_test = vectorizer.transform(test_data['text'])
-            X_test = test_data.iloc[:, :-1].values
-            y_test = test_data.iloc[:, -1].values
+            X_test = np.array(test_data.iloc[:, :-1].values)
+            y_test = np.array(test_data.iloc[:, -1].values)
 
             metrics = evaluate_model(clf, X_test, y_test)
             
