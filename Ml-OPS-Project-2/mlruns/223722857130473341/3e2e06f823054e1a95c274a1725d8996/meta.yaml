@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Deepu/OneDrive/Desktop/mlops_project/Ml-OPS-Project-2/mlruns/223722857130473341/3e2e06f823054e1a95c274a1725d8996/artifacts
+end_time: 1759345690079
+entry_point_name: ''
+experiment_id: '223722857130473341'
+lifecycle_stage: active
+run_id: 3e2e06f823054e1a95c274a1725d8996
+run_name: grandiose-worm-530
+run_uuid: 3e2e06f823054e1a95c274a1725d8996
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759345689533
+status: 3
+tags: []
+user_id: Deepu

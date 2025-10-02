@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Deepu/OneDrive/Desktop/mlops_project/Ml-OPS-Project-2/mlruns/223722857130473341/fc976588e5014bb48681f2605ca7b9da/artifacts
+end_time: 1759345034939
+entry_point_name: ''
+experiment_id: '223722857130473341'
+lifecycle_stage: active
+run_id: fc976588e5014bb48681f2605ca7b9da
+run_name: upset-ray-550
+run_uuid: fc976588e5014bb48681f2605ca7b9da
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759345034844
+status: 3
+tags: []
+user_id: Deepu
