@@ -105,8 +105,8 @@ stages:
     cmd: python src/model/model_evaluation.py
     deps:
       - models/model.pkl
-      - models/vectorizer.pkl        # added for evaluation
-      - data/processed/test_bow.csv  # added for evaluation
+      - models/vectorizer.pkl # added for evaluation
+      - data/processed/test_bow.csv # added for evaluation
       - src/model/model_evaluation.py
     metrics:
       - reports/metrics.json

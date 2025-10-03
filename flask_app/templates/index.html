@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis - MLOps Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: none;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 25px;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .form-control {
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .result-card {
+            margin-top: 20px;
+            border-radius: 15px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .positive {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+        .negative {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        .error {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #721c24;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .loading {
+            display: none;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="mb-0">🎭 Sentiment Analysis</h1>
+                        <p class="mb-0 mt-2">Powered by Machine Learning & MLOps</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" action="/predict" id="sentimentForm">
+                            <div class="mb-4">
+                                <label for="text" class="form-label fw-bold">Enter your text:</label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="text" 
+                                    name="text" 
+                                    rows="4" 
+                                    placeholder="Type something here... e.g., 'I love this product!'"
+                                    required>{{ request.form.text if request.form.text }}</textarea>
+                                <div class="form-text">
+                                    <small>💡 Examples: "I love this movie!", "This is terrible!", "The weather is okay today"</small>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg" id="predictBtn">
+                                    <span class="btn-text">🔮 Analyze Sentiment</span>
+                                    <span class="loading">
+                                        <span class="spinner"></span> Analyzing...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+
+                        {% if error %}
+                        <div class="card result-card error">
+                            <div class="card-body text-center">
+                                <h4>❌ Error</h4>
+                                <p class="mb-0">{{ error }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if result %}
+                        <div class="card result-card {{ 'positive' if result.prediction_value == 1 else 'negative' }}">
+                            <div class="card-body text-center">
+                                <h3 class="mb-3">{{ result.sentiment }}</h3>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Original Text:</strong>
+                                        <p class="mb-2">"{{ result.original_text }}"</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Confidence:</strong>
+                                        <p class="mb-2">{{ result.confidence }}</p>
+                                    </div>
+                                </div>
+                                {% if result.cleaned_text != result.original_text %}
+                                <div class="mt-3">
+                                    <small><strong>Processed Text:</strong> {{ result.cleaned_text }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>🚀 Built with Flask, MLflow, and DagsHub</p>
+                    <p><small>Model Performance: 79% Accuracy | Production Ready</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sentimentForm').addEventListener('submit', function() {
+            const btn = document.getElementById('predictBtn');
+            const btnText = btn.querySelector('.btn-text');
+            const loading = btn.querySelector('.loading');
+            
+            btnText.style.display = 'none';
+            loading.style.display = 'inline-block';
+            btn.disabled = true;
+        });
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('text');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    </script>
+</body>
+</html>
