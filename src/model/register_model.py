@@ -1,11 +1,14 @@
 # register model
 
 import json
+from dotenv import load_dotenv
 import mlflow
+from mlflow.tracking import MlflowClient
 import logging
 import os
-import dagshub
 
+# Load environment variables
+load_dotenv()
 
 dagshub_token = os.getenv("DAGSHUB_PAT")
 if not dagshub_token:
@@ -15,11 +18,10 @@ dagshub_url = "https://dagshub.com"
 repo_owner = "DeepuML"
 repo_name = "Ml-OPS-Project-2"
 
-os.environ["MLFLOW_TRACKING_USERNAME"] = repo_owner
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
 os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
-# Initialize Dagshub MLflow tracking
-dagshub.init(repo_owner=repo_owner, repo_name=repo_name, mlflow=True)
+# Set up MLflow tracking URI for CI/CD compatibility
 mlflow.set_tracking_uri(f"{dagshub_url}/{repo_owner}/{repo_name}.mlflow")
 
 
@@ -62,15 +64,30 @@ def register_model(model_name: str, model_info: dict):
         # Register the model
         model_version = mlflow.register_model(model_uri, model_name)
         
-        # Transition the model to "Staging" stage
-        client = mlflow.tracking.MlflowClient()
-        client.transition_model_version_stage(
+        # Add tags and description instead of using deprecated staging
+        client = MlflowClient()
+        client.update_model_version(
             name=model_name,
             version=model_version.version,
-            stage="Staging"
+            description="Model registered for production deployment"
         )
         
-        logger.debug(f'Model {model_name} version {model_version.version} registered and transitioned to Staging.')
+        # Set tags to indicate model readiness
+        client.set_model_version_tag(
+            name=model_name,
+            version=model_version.version,
+            key="deployment_status",
+            value="ready"
+        )
+        
+        client.set_model_version_tag(
+            name=model_name,
+            version=model_version.version,
+            key="environment",
+            value="staging"
+        )
+        
+        logger.debug(f'Model {model_name} version {model_version.version} registered with deployment tags.')
     except Exception as e:
         logger.error('Error during model registration: %s', e)
         raise

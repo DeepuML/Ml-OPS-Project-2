@@ -79,18 +79,26 @@ stages:
   model_evaluation:
     cmd: python src/model/model_evaluation.py
     deps:
+    - path: data/processed/test_bow.csv
+      hash: md5
+      md5: dae94c485a24e43e9d5a19db9ace492b
+      size: 25971679
     - path: models/model.pkl
       hash: md5
       md5: ce46737e43440edf7f54699f76a286fa
       size: 40716
+    - path: models/vectorizer.pkl
+      hash: md5
+      md5: 80a17cfb3e2f6c72899c49e6d361ba12
+      size: 120393
     - path: src/model/model_evaluation.py
       hash: md5
-      md5: 6bf14398d32053b4b5a87b4bde2cd974
-      size: 6127
+      md5: 48bb4ee0af34fc0ab3669bd4fc425134
+      size: 6123
     outs:
     - path: reports/experiment_info.json
       hash: md5
-      md5: 2eb03de9a69e6e8d121e99438e2d8b15
+      md5: 4892103766aaec29a1e167c47bca3150
       size: 82
     - path: reports/metrics.json
       hash: md5
