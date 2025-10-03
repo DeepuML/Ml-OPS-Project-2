@@ -119,3 +119,10 @@ stages:
     deps:
       - reports/experiment_info.json
       - src/model/register_model.py
+
+  # Stage for model promotion
+  model_promotion:
+    cmd: python src/model/promote_model.py
+    deps:
+      - reports/experiment_info.json
+      - src/model/promote_model.py
