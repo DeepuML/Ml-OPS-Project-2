@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables (don't copy secrets)
+.env
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Data files (too large)
+data/raw/
+data/external/
+
+# Logs
+*.log
+logs/
+
+# Test files
+tests/
+test_*.py
+*_test.py
+
+# Documentation
+docs/
+*.md
+README.md
+
+# DVC
+.dvc/
+*.dvc
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Requirements (use specific one)
+requirements.txt
+requirements_clean.txt
