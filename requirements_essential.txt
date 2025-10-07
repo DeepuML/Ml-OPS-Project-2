@@ -8,7 +8,7 @@ Werkzeug==2.3.7
 scikit-learn==1.5.1
 pandas==2.0.3
 numpy==1.26.4
-scipy==1.14.0
+scipy==1.13.1
 
 # MLflow and Model Management
 mlflow==2.15.0
