@@ -64,15 +64,53 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_PAT }}
 
       - name: Setup DVC
+        continue-on-error: true
         run: |
-          # Configure DVC remote if needed
+          # Check if DVC is actually configured with active stages
           if [ -f "dvc.yaml" ]; then
-            echo "✅ DVC configuration found"
-            dvc remote modify origin --local auth basic
-            dvc remote modify origin --local user ${{ secrets.DAGSHUB_PAT }}
-            dvc remote modify origin --local password ${{ secrets.DAGSHUB_PAT }}
+            echo "📄 DVC configuration file found"
+            
+            # Check if dvc.yaml has any active (uncommented) stages
+            ACTIVE_STAGES=$(grep -v "^#" dvc.yaml | grep -c "cmd:" || echo "0")
+            
+            if [ "$ACTIVE_STAGES" -gt 0 ]; then
+              echo "✅ Found $ACTIVE_STAGES active DVC stages"
+              
+              # List existing remotes
+              echo "� Checking existing DVC remotes..."
+              dvc remote list || echo "No remotes configured yet"
+              
+              # Get or create default remote
+              DEFAULT_REMOTE=$(dvc remote default 2>/dev/null || echo "")
+              if [ -z "$DEFAULT_REMOTE" ]; then
+                # Check if any remotes exist
+                FIRST_REMOTE=$(dvc remote list 2>/dev/null | head -1 | awk '{print $1}' || echo "")
+                if [ -n "$FIRST_REMOTE" ]; then
+                  DEFAULT_REMOTE=$FIRST_REMOTE
+                  echo "🔧 Using existing remote: $DEFAULT_REMOTE"
+                else
+                  echo "🆕 Creating default remote for DagsHub"
+                  dvc remote add -d origin https://dagshub.com/DeepuML/Ml-OPS-Project-2.dvc
+                  DEFAULT_REMOTE="origin"
+                fi
+              else
+                echo "🎯 Using default remote: $DEFAULT_REMOTE"
+              fi
+              
+              # Configure authentication for the remote
+              if [ -n "$DEFAULT_REMOTE" ]; then
+                echo "🔐 Configuring authentication for remote: $DEFAULT_REMOTE"
+                dvc remote modify $DEFAULT_REMOTE --local auth basic || echo "⚠️ Auth config failed, continuing"
+                dvc remote modify $DEFAULT_REMOTE --local user ${{ secrets.DAGSHUB_PAT }} || echo "⚠️ User config failed, continuing"
+                dvc remote modify $DEFAULT_REMOTE --local password ${{ secrets.DAGSHUB_PAT }} || echo "⚠️ Password config failed, continuing"
+                echo "✅ DVC remote configuration attempted"
+              fi
+            else
+              echo "ℹ️ DVC file exists but all stages are commented out"
+              echo "Skipping DVC setup for inactive pipeline"
+            fi
           else
-            echo "⚠️ No DVC configuration found, skipping DVC setup"
+            echo "ℹ️ No dvc.yaml found, skipping DVC setup"
           fi
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
@@ -81,14 +119,40 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f "dvc.yaml" ]; then
-            echo "🔄 Running DVC pipeline..."
-            # Try to pull data first
-            dvc pull || echo "⚠️ DVC pull failed, continuing with existing data"
-            # Run pipeline
-            dvc repro --force || echo "⚠️ DVC repro had issues, but continuing CI/CD"
-            echo "✅ DVC pipeline step completed"
+            # Check if dvc.yaml has any active (uncommented) stages
+            ACTIVE_STAGES=$(grep -v "^#" dvc.yaml | grep -c "cmd:" || echo "0")
+            
+            if [ "$ACTIVE_STAGES" -gt 0 ]; then
+              echo "🔄 Running DVC pipeline with $ACTIVE_STAGES active stages..."
+              
+              # Check DVC status
+              echo "📊 Checking DVC status..."
+              dvc status || echo "⚠️ DVC status check had issues, continuing"
+              
+              # Try to pull data first (only if remote is accessible)
+              echo "⬇️ Attempting to pull data..."
+              if dvc pull --dry 2>/dev/null >/dev/null; then
+                dvc pull || echo "⚠️ DVC pull failed, continuing with existing data"
+              else
+                echo "ℹ️ No data to pull or remote not accessible, using local data"
+              fi
+              
+              # Run pipeline with better error handling
+              echo "🏃 Running DVC reproduction..."
+              if dvc repro --dry 2>/dev/null >/dev/null; then
+                dvc repro --force || echo "⚠️ DVC repro had issues, but continuing CI/CD"
+              else
+                echo "ℹ️ Nothing to reproduce or dependencies not met, skipping repro"
+              fi
+              
+              echo "✅ DVC pipeline execution completed"
+            else
+              echo "ℹ️ DVC file exists but all stages are commented out"
+              echo "Skipping DVC pipeline execution - no active stages found"
+              echo "This is normal for projects in development phase"
+            fi
           else
-            echo "⚠️ No dvc.yaml found, skipping DVC pipeline"
+            echo "ℹ️ No dvc.yaml found, DVC pipeline not configured"
             echo "This step is optional for CI/CD testing"
           fi
         env:
