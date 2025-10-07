@@ -66,6 +66,10 @@ jobs:
       - name: Setup DVC
         continue-on-error: true
         run: |
+          # Check DVC installation and fix potential import issues
+          echo "🔧 Checking DVC installation..."
+          python -c "import dvc; print(f'DVC version: {dvc.__version__}')" || echo "⚠️ DVC import issue, continuing"
+
           # Check if DVC is actually configured with active stages
           if [ -f "dvc.yaml" ]; then
             echo "📄 DVC configuration file found"
@@ -101,8 +105,8 @@ jobs:
               if [ -n "$DEFAULT_REMOTE" ]; then
                 echo "🔐 Configuring authentication for remote: $DEFAULT_REMOTE"
                 dvc remote modify $DEFAULT_REMOTE --local auth basic || echo "⚠️ Auth config failed, continuing"
-                dvc remote modify $DEFAULT_REMOTE --local user ${{ secrets.DAGSHUB_PAT }} || echo "⚠️ User config failed, continuing"
-                dvc remote modify $DEFAULT_REMOTE --local password ${{ secrets.DAGSHUB_PAT }} || echo "⚠️ Password config failed, continuing"
+                dvc remote modify $DEFAULT_REMOTE --local user "${{ secrets.DAGSHUB_PAT }}" || echo "⚠️ User config failed, continuing"
+                dvc remote modify $DEFAULT_REMOTE --local password "${{ secrets.DAGSHUB_PAT }}" || echo "⚠️ Password config failed, continuing"
                 echo "✅ DVC remote configuration attempted"
               fi
             else

@@ -281,8 +281,8 @@ def initialize_model():
                 def mock_transform(texts):
                     if isinstance(texts, str):
                         texts = [texts]
-                    # Return sparse matrix with 5000 features to match expected MLflow model input
-                    return sp.csr_matrix(np.random.rand(len(texts), 5000))
+                    # Return sparse matrix with 5000 features - use integers to match BoW format
+                    return sp.csr_matrix(np.random.randint(0, 2, size=(len(texts), 5000)))
                 
                 vectorizer.transform.side_effect = mock_transform
                 vectorizer.vocabulary_ = {f"word_{i}": i for i in range(5000)}
