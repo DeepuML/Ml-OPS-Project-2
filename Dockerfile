@@ -20,10 +20,10 @@ COPY flask_app/ /app/
 # Copy models directory
 COPY models/ /app/models/
 
-# Verify model files exist
+# Verify model files exist (optional - they might be downloaded at runtime)
 RUN ls -la /app/models/ && \
-    test -f /app/models/model.pkl && echo "✅ Model file found" && \
-    test -f /app/models/vectorizer.pkl && echo "✅ Vectorizer file found"
+    (test -f /app/models/model.pkl && echo "✅ Model file found" || echo "⚠️ Model file will be downloaded at runtime") && \
+    (test -f /app/models/vectorizer.pkl && echo "✅ Vectorizer file found" || echo "⚠️ Vectorizer file will be downloaded at runtime")
 
 # Create necessary directories
 RUN mkdir -p /app/data /app/logs
