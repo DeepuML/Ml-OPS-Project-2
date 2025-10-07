@@ -75,10 +75,14 @@ class TestModelLoading(unittest.TestCase):
             print("✅ Loaded test data from file")
         except FileNotFoundError:
             print("🧪 Creating mock test data")
-            # Create mock test data with same structure
-            cls.holdout_data = pd.DataFrame({
-                f'feature_{i}': np.random.rand(100) for i in range(5000)
-            })
+            # Create mock test data with correct schema for MLflow
+            # MLflow model expects integer columns named '0', '1', '2', etc.
+            mock_data = {}
+            for i in range(5000):
+                # Generate integer data (0 or 1) to match BoW format and MLflow schema
+                mock_data[str(i)] = np.random.randint(0, 2, 100)
+            
+            cls.holdout_data = pd.DataFrame(mock_data)
             cls.holdout_data['target'] = np.random.randint(0, 2, 100)
 
     @staticmethod
