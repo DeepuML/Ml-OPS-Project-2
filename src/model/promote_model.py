@@ -125,22 +125,19 @@ def main():
     try:
         setup_mlflow()
         
-        # Load experiment info to get run_id
-        with open('reports/experiment_info.json', 'r') as f:
-            model_info = json.load(f)
-        
         model_name = "my_model"
-        run_id = model_info['run_id']
+        client = MlflowClient()
         
         # Get latest model version
-        client = MlflowClient()
         model_versions = client.search_model_versions(f"name='{model_name}'")
         
         if model_versions:
             latest_version = max(model_versions, key=lambda x: int(x.version))
             model_version = latest_version.version
+            run_id = latest_version.run_id
             
             logger.info(f"Evaluating model {model_name} version {model_version} for production promotion...")
+            logger.info(f"Using run_id: {run_id}")
             
             success = promote_model_to_production(model_name, model_version, run_id)
             
