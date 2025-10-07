@@ -15,7 +15,11 @@ from dotenv import load_dotenv
 import logging
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+log_level = logging.DEBUG if os.environ.get('FLASK_ENV') == 'development' else logging.INFO
+logging.basicConfig(
+    level=log_level,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 # Load environment variables
@@ -137,6 +141,14 @@ def initialize_model():
     global model, vectorizer
     
     try:
+        # Log environment information
+        logger.info(f"Initializing model - Environment: {os.environ.get('FLASK_ENV', 'unknown')}")
+        logger.info(f"Current working directory: {os.getcwd()}")
+        logger.info(f"Python path: {os.environ.get('PYTHONPATH', 'not set')}")
+        
+        # Check if running in Docker
+        is_docker = os.path.exists('/.dockerenv') or os.environ.get('DOCKER_ENV') == 'true'
+        logger.info(f"Running in Docker: {is_docker}")
         model_name = "my_model"
         model_loaded = False
         
@@ -154,6 +166,7 @@ def initialize_model():
         
         # Always try to load vectorizer from local files (MLflow doesn't store vectorizer)
         vectorizer_paths = [
+            '/app/models/vectorizer.pkl',  # Docker path first
             '../models/vectorizer.pkl',
             'models/vectorizer.pkl', 
             './models/vectorizer.pkl',
@@ -164,11 +177,15 @@ def initialize_model():
         vectorizer_loaded = False
         for vectorizer_path in vectorizer_paths:
             try:
+                logger.debug(f"Trying vectorizer path: {vectorizer_path}")
                 if os.path.exists(vectorizer_path):
+                    logger.debug(f"Path exists, attempting to load: {vectorizer_path}")
                     vectorizer = pickle.load(open(vectorizer_path, 'rb'))
                     logger.info(f"✅ Loaded vectorizer from {vectorizer_path}")
                     vectorizer_loaded = True
                     break
+                else:
+                    logger.debug(f"Path does not exist: {vectorizer_path}")
             except Exception as e:
                 logger.debug(f"Could not load vectorizer from {vectorizer_path}: {e}")
                 continue
@@ -177,6 +194,7 @@ def initialize_model():
         if not model_loaded:
             # Try different possible paths for model files
             model_paths = [
+                '/app/models/model.pkl',  # Docker path first
                 '../models/model.pkl',  # From flask_app directory
                 'models/model.pkl',     # From project root
                 './models/model.pkl',   # Current directory
@@ -186,11 +204,15 @@ def initialize_model():
             # Try to load model from different paths
             for model_path in model_paths:
                 try:
+                    logger.debug(f"Trying model path: {model_path}")
                     if os.path.exists(model_path):
+                        logger.debug(f"Path exists, attempting to load: {model_path}")
                         model = pickle.load(open(model_path, 'rb'))
                         logger.info(f"✅ Loaded model from {model_path}")
                         model_loaded = True
                         break
+                    else:
+                        logger.debug(f"Path does not exist: {model_path}")
                 except Exception as e:
                     logger.debug(f"Could not load model from {model_path}: {e}")
                     continue

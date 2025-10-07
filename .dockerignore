@@ -16,6 +16,8 @@ venv.bak/
 
 # Environment variables (don't copy secrets)
 .env
+.env.development
+.env.production
 
 # Git
 .git/
@@ -71,3 +73,6 @@ build/
 # Requirements (use specific one)
 requirements.txt
 requirements_clean.txt
+
+# Testing scripts
+test_docker_locally.py
