@@ -79,27 +79,27 @@ The project goes beyond a standard machine learning project by incorporating ind
 │  Raw Data (CSV)                                                             │
 │       │                                                                     │
 │       ▼                                                                     │
-│  ┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐    │
+│  ┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐      │
 │  │  Data Ingestion  │───▶│ Data Preprocessing│───▶│ Feature Engineering│   │
-│  │ (train/test split│    │(NLTK, lemmatize, │    │  (Bag of Words /   │   │
-│  │  25% test size)  │    │ stop-words, URLs) │    │  CountVectorizer)  │   │
-│  └─────────────────┘    └──────────────────┘    └────────────────────┘   │
+│  │ (train/test split│    │(NLTK, lemmatize, │    │  (Bag of Words /   │     │
+│  │  25% test size)  │    │ stop-words, URLs) │    │  CountVectorizer)  │    │
+│  └─────────────────┘    └──────────────────┘    └────────────────────┘      │
 │                                                           │                 │
 │                                                           ▼                 │
-│  ┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐    │
-│  │  Model Promotion │◀───│ Model Evaluation │◀───│   Model Building   │   │
-│  │ (auto-promote if │    │(accuracy, prec., │    │ (Logistic Regression│  │
-│  │  criteria met)   │    │ recall, AUC logged│   │  C=1, liblinear)   │   │
-│  └─────────────────┘    │  to MLflow)       │    └────────────────────┘   │
-│           │              └──────────────────┘                              │
+│  ┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐      │
+│  │  Model Promotion │◀───│ Model Evaluation │◀───│   Model Building   │    │
+│  │ (auto-promote if │    │(accuracy, prec., │    │ (Logistic Regression│    │
+│  │  criteria met)   │    │ recall, AUC logged│   │  C=1, liblinear)   │     │
+│  └─────────────────┘    │  to MLflow)       │    └────────────────────┘     │
+│           │              └──────────────────┘                               │
 │           ▼                                                                 │
-│  ┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐    │
-│  │  Model Registry  │───▶│   Flask App      │───▶│  Docker Container  │   │
-│  │  (DagsHub /      │    │ (Web UI + REST   │    │  (Gunicorn, prod)  │   │
-│  │   MLflow)        │    │  API)            │    │                    │   │
-│  └─────────────────┘    └──────────────────┘    └────────────────────┘   │
+│  ┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐      │
+│  │  Model Registry  │───▶│   Flask App      │───▶│  Docker Container  │    │
+│  │  (DagsHub /      │    │ (Web UI + REST   │    │  (Gunicorn, prod)  │     │
+│  │   MLflow)        │    │  API)            │    │                    │     │
+│  └─────────────────┘    └──────────────────┘    └────────────────────┘      │
 │                                                                             │
-│  All stages versioned with DVC · Experiments tracked with MLflow           │
+│  All stages versioned with DVC · Experiments tracked with MLflow            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
